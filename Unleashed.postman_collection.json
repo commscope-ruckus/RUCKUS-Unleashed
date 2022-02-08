@@ -1,0 +1,947 @@
+{
+	"info": {
+		"_postman_id": "e7b46283-e942-4e86-999e-452f03aa80e6",
+		"name": "Unleashed",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"BaseURL\", \"10.0.0.190\");",
+							"pm.collectionVariables.set(\"username\", \"admin\");",
+							"pm.collectionVariables.set(\"password\", \"password\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/login.jsp?username={{username}}&action=login.jsp&password={{password}}&ok=ruckus",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"login.jsp"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "{{username}}"
+						},
+						{
+							"key": "action",
+							"value": "login.jsp"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}"
+						},
+						{
+							"key": "ok",
+							"value": "ruckus"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get CSRF token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = xml2Json(responseBody);",
+							"var csrf = jsonData.script.split(\"=\").pop().substring(2,12)",
+							"pm.collectionVariables.set(\"csrf\", csrf);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"BaseURL\", \"10.0.0.190\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disableCookies": false
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_csrfTokenVar.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_csrfTokenVar.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get system information",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "text/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='getstat' comp='system'>\n    <identity/>\n    <sysinfo/>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get max values",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "text/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='docmd' xcmd='get-platform-depends' comp='system'>\n    <xcmd cmd='get-platform-depends' type='wlan-maxnums'/>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get stats",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "{{csrf}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='getstat' comp='stamgr' enable-gzip=\"0\" caller=\"SCI\">\n <ap INTERVAL-STATS=\"yes\" INTERVAL-START=\"1604710474\" INTERVAL-STOP=\"1605315274\"  LEVEL='1'/>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get wlan stats",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='getstat' comp='stamgr' enable-gzip=\"0\" caller=\"SCI\">\n <vap INTERVAL-STATS=\"yes\" INTERVAL-START=\"1604710474\" INTERVAL-STOP=\"1605315274\"  LEVEL='1'/>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create iDPSK wlan",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='addobj' comp='wlansvc-list'>\n    <wlansvc name='jDPSK' ssid='jDPSK' description='' ofdm-rate-only='false' bss-minrate='0' tx-rate-config='1' authentication='open' encryption='wpa2' do-802-11w='0' is-guest='false' max-clients-per-radio='100' usage='user' acctsvr-id='0' acct-upd-interval='10' do-802-11d='enabled' do-wmm-ac='disabled' option82='0' option82-opt1='0' option82-opt2='0' option82-opt150='0' option82-opt151='0' option82-areaName='' force-dhcp='0' force-dhcp-timeout='10' dis-dgaf='0' parp='0' authstats='0' sta-info-extraction='1' enable-type='0' idle-timeout='true' max-idle-timeout='300' called-station-id-type='0' policy-id='' policy6-id='' ci-whitelist-id='0' client-isolation='disabled' acl-id='1' pool-id='' vlan-id='1' https-redirection='disabled' local-bridge='1' dhcpsvr-id='0' bgscan='1' balance='0' band-balance='0' fast-bss='disabled' devicepolicy-id='' precedence-id='1' role-based-access-ctrl='false' client-flow-log='disabled' export-client-log='false' dtim-period='1' directed-mbc='5' transient-client-mgnt='0'>\n        <rrm neighbor-report='disabled'/>\n        <smartcast mcast-filter='disabled'/>\n        <avp-policy avp-enabled='disabled' avpdeny-id='0'/>\n        <urlfiltering-policy urlfiltering-enabled='disabled' urlfiltering-id='0'/>\n        <qos uplink-preset='DISABLE' downlink-preset='DISABLE' perssid-uplink-preset='0' perssid-downlink-preset='0'/>\n        <wpa cipher='aes' x-passphrase='ruckus123!' passphrase='ruckus123!' dynamic-psk='enabled' dynamic-psk-len='8' dpsk-type='friendly' expire='0' start-point='first-use' shared-dpsk='enabled' shared-dpsk-num='10'/>\n        <queue-priority voice='0' video='2' data='4' background='6'/>\n        <wlan-schedule value='0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0'/>\n    </wlansvc>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin10/_conf.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin10",
+						"_conf.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create eDPSK wlan",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='addobj' updater='wlansvc-list.1621983400515.2442' comp='wlansvc-list'>\n    <wlansvc name='new_eDPSK' ssid='new_eDPSK' description='' ofdm-rate-only='false' bss-minrate='0' tx-rate-config='1' authentication='open' encryption='wpa2' do-802-11w='0' is-guest='false' max-clients-per-radio='100' usage='user' acctsvr-id='0' acct-upd-interval='10' do-802-11d='enabled' do-wmm-ac='disabled' option82='0' option82-opt1='0' option82-opt2='0' option82-opt150='0' option82-opt151='0' option82-areaName='' force-dhcp='0' force-dhcp-timeout='10' dis-dgaf='0' parp='0' authstats='0' sta-info-extraction='1' enable-type='0' idle-timeout='true' max-idle-timeout='300' called-station-id-type='0' policy-id='' policy6-id='' ci-whitelist-id='0' client-isolation='disabled' acl-id='1' pool-id='' vlan-id='1' https-redirection='disabled' local-bridge='1' dhcpsvr-id='0' bgscan='1' balance='0' band-balance='0' external-dynamic-psk-authsvr-id='3' fast-bss='disabled' devicepolicy-id='' precedence-id='1' role-based-access-ctrl='false' client-flow-log='disabled' export-client-log='false' dtim-period='1' directed-mbc='5' transient-client-mgnt='0'>\n        <rrm neighbor-report='disabled'/>\n        <smartcast mcast-filter='disabled'/>\n        <avp-policy avp-enabled='disabled' avpdeny-id='0'/>\n        <urlfiltering-policy urlfiltering-enabled='disabled' urlfiltering-id='0'/>\n        <qos uplink-preset='DISABLE' downlink-preset='DISABLE' perssid-uplink-preset='0' perssid-downlink-preset='0'/>\n        <wpa cipher='aes' x-passphrase='' passphrase='' dynamic-psk='external'/>\n        <queue-priority voice='0' video='2' data='4' background='6'/>\n        <wlan-schedule value='0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0'/>\n    </wlansvc>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_conf.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_conf.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create WISPr wlan",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='addobj' updater='wlansvc-list.1621983757613.5810' comp='wlansvc-list'>\n    <wlansvc name='new_WISPr' ssid='new_WISPr' description='' ofdm-rate-only='false' bss-minrate='0' tx-rate-config='1' authentication='open' encryption='none' do-802-11w='0' is-guest='false' max-clients-per-radio='100' usage='wispr' acctsvr-id='0' acct-upd-interval='10' do-802-11d='enabled' do-wmm-ac='disabled' option82='0' option82-opt1='0' option82-opt2='0' option82-opt150='0' option82-opt151='0' option82-areaName='' force-dhcp='0' force-dhcp-timeout='10' dis-dgaf='0' parp='0' authstats='0' sta-info-extraction='1' enable-type='0' idle-timeout='true' max-idle-timeout='300' called-station-id-type='0' web-auth='enabled' en-grace-period-sets='enabled' grace-period-sets='480' authsvr-id='1' hotspot-id='1' hotspot-revision='0' bypass-cna='false' acl-id='1' pool-id='' vlan-id='1' https-redirection='enabled' local-bridge='1' dhcpsvr-id='0' bgscan='1' balance='0' band-balance='0' fast-bss='disabled' devicepolicy-id='' precedence-id='1' role-based-access-ctrl='false' client-flow-log='disabled' export-client-log='false' dtim-period='1' directed-mbc='5' transient-client-mgnt='0'>\n        <rrm neighbor-report='disabled'/>\n        <smartcast mcast-filter='disabled'/>\n        <avp-policy avp-enabled='disabled' avpdeny-id='0'/>\n        <urlfiltering-policy urlfiltering-enabled='disabled' urlfiltering-id='0'/>\n        <qos uplink-preset='DISABLE' downlink-preset='DISABLE' perssid-uplink-preset='0' perssid-downlink-preset='0'/>\n        <queue-priority voice='0' video='2' data='4' background='6'/>\n        <wlan-schedule value='0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0:0x0'/>\n    </wlansvc>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_conf.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_conf.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get wlan info",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='getstat' comp='stamgr'>\n    <wlan LEVEL='1'/>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create DPSKs",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action=\"docmd\" comp=\"system\" updater=\"batch-dpsk\" checkAbility=\"2\">\n    <xcmd cmd=\"batch-dpsk\" type=\"gen\" num=\"5\" max-num=\"2048\" batch-dpsk=\"\" wlansvc-id=\"1\" wlansvc-name=\"jDPSK\" role-id=\"\" dpsk-len=\"8\"/>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get DPSKs",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action=\"getstat\" comp=\"stamgr\" updater=\"dpsk-list.1621693311845.1755\">\n    <dpsklist/>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get client stats",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "text/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='getstat' comp='stamgr' enable-gzip=\"0\">\n <client INTERVAL-STATS=\"yes\" INTERVAL-START=\"1604710474\" INTERVAL-STOP=\"1605315274\" />\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create authentication server",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='addobj' comp='authsvr-list'>\n    <authsvr name='cloudpath' type='radius-auth' encryption='disabled' algorithm='pap' backup='disabled' group-string='memberOf' timeout='3' failover-retry='2' retry-consecutive-packet='1' retry-primary-interval='5'>\n        <primary-radius ip='10.0.0.239' port='1812' x-secret='video54' timeout='3' retry='5'/>\n        <secondary-radius ip='' port='1812' x-secret='' timeout='3' retry='5'/>\n    </authsvr>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_conf.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_conf.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create hostspot portal",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='addobj' updater='hotspot-list.1621982061744.9842' comp='hotspot-list'>\n    <hotspot name='my_portal' smartclient='disable' smartclient-info='Please use Hotspot application to login the network before browsing Internet.' smartclient-secure='https' login-page-url='http://10.0.0.239/enroll/RuckusWireless/classroom/' start-page-type='user' start-page-url='' session-timeout='false' max-session-time='86400' idle-timeout='false' max-idle-time='1800' dos-detect='true' authsvr-id='1' mac-auth='false' acct-svr-id='0' interim-update-frequency='10' ci-whitelist-id='0' client-isolation='disabled' location-id='' location-name='' revision='0'/>\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_conf.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_conf.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get session stats",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "text/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='getstat' comp='stamgr' enable-gzip=\"0\">\n <session INTERVAL-STATS=\"yes\" INTERVAL-START=\"1604710474\" INTERVAL-STOP=\"1605315274\" />\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get system stats",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "text/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='getstat' comp='stamgr' enable-gzip=\"0\">\n <system />\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get wlan group",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "text/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='getstat' comp='stamgr' enable-gzip=\"0\" caller=\"SCI\">\n <wlangroup />\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "html"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get AP group stats",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "text/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='getstat' comp='stamgr' enable-gzip=\"0\" caller=\"SCI\">\n <apgroup />\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get rogue APs",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"type": "text",
+						"value": "{{csrf}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "text/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<ajax-request action='getstat' comp='stamgr' enable-gzip=\"0\" caller=\"SCI\">\n <rogue />\n</ajax-request>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
+					"protocol": "https",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"admin",
+						"_cmdstat.jsp"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BaseURL",
+			"value": "172.16.105.24"
+		},
+		{
+			"key": "csrf",
+			"value": "kcGlRqePEi"
+		},
+		{
+			"key": "pasword",
+			"value": "admin"
+		},
+		{
+			"key": "username",
+			"value": "admin"
+		},
+		{
+			"key": "password",
+			"value": "admin"
+		}
+	]
+}
