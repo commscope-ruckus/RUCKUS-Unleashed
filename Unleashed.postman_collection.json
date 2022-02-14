@@ -1,37 +1,87 @@
 {
 	"info": {
-		"_postman_id": "e7b46283-e942-4e86-999e-452f03aa80e6",
+		"_postman_id": "dd996461-2b52-48f4-aa7b-30b9925a562d",
 		"name": "Unleashed",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Login",
+			"name": "1) Set Variables",
 			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let loginUrl = pm.response.headers.get(\"Location\")\r",
+							"let baseUrl = loginUrl.substr(0, loginUrl.lastIndexOf('/'))\r",
+							"pm.collectionVariables.set(\"LoginURL\", loginUrl)\r",
+							"pm.collectionVariables.set(\"BaseURL\", baseUrl)\r"
+						],
+						"type": "text/javascript"
+					}
+				},
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.collectionVariables.set(\"BaseURL\", \"10.0.0.190\");",
-							"pm.collectionVariables.set(\"username\", \"admin\");",
-							"pm.collectionVariables.set(\"password\", \"password\");"
+							"pm.collectionVariables.set(\"BaseURL\", \"https://10.0.0.190\")\r",
+							"pm.collectionVariables.set(\"username\", \"admin\")\r",
+							"pm.collectionVariables.set(\"password\", \"password\")"
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
+			"protocolProfileBehavior": {
+				"followOriginalHttpMethod": false,
+				"disableCookies": true,
+				"followRedirects": false
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/login.jsp?username={{username}}&action=login.jsp&password={{password}}&ok=ruckus",
-					"protocol": "https",
+					"raw": "{{BaseURL}}",
 					"host": [
 						"{{BaseURL}}"
-					],
-					"path": [
-						"admin",
-						"login.jsp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2) Login",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let csrf = pm.response.headers.get(\"HTTP_X_CSRF_TOKEN\")\r",
+							"pm.collectionVariables.set(\"csrf\", csrf)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LoginURL}}?username={{username}}&password={{password}}&ok=Log In",
+					"host": [
+						"{{LoginURL}}"
 					],
 					"query": [
 						{
@@ -39,71 +89,13 @@
 							"value": "{{username}}"
 						},
 						{
-							"key": "action",
-							"value": "login.jsp"
-						},
-						{
 							"key": "password",
 							"value": "{{password}}"
 						},
 						{
 							"key": "ok",
-							"value": "ruckus"
+							"value": "Log In"
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get CSRF token",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var jsonData = xml2Json(responseBody);",
-							"var csrf = jsonData.script.split(\"=\").pop().substring(2,12)",
-							"pm.collectionVariables.set(\"csrf\", csrf);"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"pm.collectionVariables.set(\"BaseURL\", \"10.0.0.190\");"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true,
-				"disableCookies": false
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://{{BaseURL}}/admin/_csrfTokenVar.jsp",
-					"protocol": "https",
-					"host": [
-						"{{BaseURL}}"
-					],
-					"path": [
-						"admin",
-						"_csrfTokenVar.jsp"
 					]
 				}
 			},
@@ -140,13 +132,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -184,13 +174,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -228,13 +216,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -272,13 +258,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -316,13 +300,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin10/_conf.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_conf.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin10",
 						"_conf.jsp"
 					]
 				}
@@ -360,13 +342,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_conf.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_conf.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_conf.jsp"
 					]
 				}
@@ -404,13 +384,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_conf.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_conf.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_conf.jsp"
 					]
 				}
@@ -448,13 +426,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -492,13 +468,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -536,13 +510,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -580,13 +552,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -624,13 +594,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_conf.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_conf.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_conf.jsp"
 					]
 				}
@@ -668,13 +636,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_conf.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_conf.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_conf.jsp"
 					]
 				}
@@ -712,13 +678,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -756,13 +720,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -800,13 +762,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -844,13 +804,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -888,13 +846,11 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{BaseURL}}/admin/_cmdstat.jsp",
-					"protocol": "https",
+					"raw": "{{BaseURL}}/_cmdstat.jsp",
 					"host": [
 						"{{BaseURL}}"
 					],
 					"path": [
-						"admin",
 						"_cmdstat.jsp"
 					]
 				}
@@ -923,25 +879,5 @@
 		}
 	],
 	"variable": [
-		{
-			"key": "BaseURL",
-			"value": "172.16.105.24"
-		},
-		{
-			"key": "csrf",
-			"value": "kcGlRqePEi"
-		},
-		{
-			"key": "pasword",
-			"value": "admin"
-		},
-		{
-			"key": "username",
-			"value": "admin"
-		},
-		{
-			"key": "password",
-			"value": "admin"
-		}
 	]
 }
